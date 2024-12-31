@@ -21,7 +21,8 @@ public class FirstPersonController : MonoBehaviour
 
     [Header("Movement Parameters")]
         [SerializeField] private float walkSpeed = 3.0f; //defaut walk speed and gravity
-        [SerializeField] private float sprintSpeed = 6.0f;
+        [SerializeField] private float sprintSpeed = 4.5;
+        [SerializeField] private float crouchSpeed = 1.5f;
     
     
     [Header("Look Parameters")]
@@ -31,8 +32,8 @@ public class FirstPersonController : MonoBehaviour
         [SerializeField, Range(1, 180)] private float lowerLookLimit = 80.0f;
     
     [Header("Jumping Parameters")]
-    [SerializeField] private float jumpForce = 8.0f;
-    [SerializeField] private float gravity = 30.0f;
+        [SerializeField] private float jumpForce = 8.0f;
+        [SerializeField] private float gravity = 30.0f;
 
     [Header("Counching Parameters")]
         [SerializeField] private float crouchHeight = 0.5f;
@@ -80,8 +81,10 @@ public class FirstPersonController : MonoBehaviour
 
     private void HandleMovementInput() //Keyboard Controller 
     {
-        currentInput = new Vector2 ((IsSprinting ? sprintSpeed : walkSpeed) * Input.GetAxis("Vertical"), (IsSprinting ? sprintSpeed : walkSpeed) * Input.GetAxis("Horizontal"));
-        //Reset Vecotr Direction for next movement 
+currentInput = new Vector2(
+    (isCrouching ? crouchSpeed : (IsSprinting ? sprintSpeed : walkSpeed)) * Input.GetAxis("Vertical"),
+    (IsSprinting ? sprintSpeed : walkSpeed) * Input.GetAxis("Horizontal"));
+            //Reset Vecotr Direction for next movement 
         float moveDirectionY  = moveDirection.y;
         moveDirection = (transform.TransformDirection(Vector3.forward) * currentInput.x) + (transform.TransformDirection(Vector3.right) * currentInput.y);
         moveDirection.y = moveDirectionY; // moveDirection.y set to cached moveDirectionY
@@ -129,7 +132,7 @@ public class FirstPersonController : MonoBehaviour
         {
             characterController.height = Mathf.Lerp(currentHeight, targetHeight, timeElapsed/timeToCrouch);
             characterController.center = Vector3.Lerp(currentCentre, targetCentre, timeElapsed/timeToCrouch);
-            timeElapsed =+ Time.deltaTime;
+            timeElapsed += Time.deltaTime;
             yield return null;
         }
             characterController.height = targetHeight;
@@ -139,7 +142,5 @@ public class FirstPersonController : MonoBehaviour
 
             duringCrouchAnimation = false;
     }
-
-
 
 }
